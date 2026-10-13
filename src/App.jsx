@@ -10,6 +10,7 @@ const EMAIL = 'oneummahquranlearning@gmail.com';
 const PHONE = '+92 308 2688883';
 const WHATSAPP_NUMBER = '923082688883';
 const STUDENT_WHATSAPP = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('I want more details. Thanks.')}`;
+const COURSES_WHATSAPP = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('I wanna talk about course selection, I am confused.')}`;
 const TEACHER_WHATSAPP = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('I wanna join as a teacher. Thanks.')}`;
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH || '/academy-admin-7f4c92').replace(/\/+$/, '') || '/academy-admin-7f4c92';
 const BASE_LANGUAGES = ['English', 'Urdu', 'Arabic', 'Pashto'];
@@ -1200,7 +1201,7 @@ function App() {
             <button className="course-link" onClick={() => beginCourseEnrollment(course.title)}>Explore this course <ArrowUpRight size={16} /></button>
           </article>;
         })}</div>
-        <div className="course-footnote"><Sparkles size={15} /><span>Not sure where to begin? We'll help find the right path together.</span><button onClick={() => beginTrial()}>Let's talk <ArrowRight size={15} /></button></div>
+        <div className="course-footnote"><Sparkles size={15} /><span>Not sure where to begin? We'll help find the right path together.</span><a href={COURSES_WHATSAPP} target="_blank" rel="noreferrer">Let's talk <ArrowRight size={15} /></a></div>
       </section>}
 
       {page === '/teachers' && <section className="teachers-section section-wrap page-section">
