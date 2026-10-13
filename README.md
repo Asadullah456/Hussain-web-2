@@ -42,7 +42,7 @@ First, commit and push `render.yaml`, `vercel.json` and the README changes to Gi
 
 1. In Vercel, import the same GitHub repository as a project. Use the repository root, the `npm run build` build command, and `dist` as the output directory.
 2. In **Project Settings > Environment Variables**, add `VITE_ADMIN_PATH` with the same private sign-in path configured in Render (the default is `/academy-admin-7f4c92`). Apply it to Production, Preview, and Development as appropriate.
-3. Open [`vercel.json`](./vercel.json). Its API destination is set to `https://hussain-quran-academy-api.onrender.com`. If Render assigned your service a different hostname, replace that hostname in each destination in this file.
+3. Open [`vercel.json`](./vercel.json). Its API destination is set to `https://hussain-web-2.onrender.com`. If Render assigned your service a different hostname, replace that hostname in each destination in this file.
 4. Redeploy Vercel after setting the environment variable or changing the rewrite hostname. The frontend and API must use the same `VITE_ADMIN_PATH`.
 
 ### 3. Verify production
