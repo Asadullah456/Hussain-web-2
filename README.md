@@ -38,6 +38,8 @@ First, commit and push `render.yaml`, `vercel.json` and the README changes to Gi
    - `SITE_URL`: the public HTTPS origin of your Vercel site, without a trailing slash (for example, `https://your-site.vercel.app`). If you don't know the assigned Vercel URL yet, update this value in Render after the first Vercel deployment. Update it again if you later use a custom domain.
 4. Wait for the Render service to deploy and confirm its `/api/health` endpoint returns JSON with `"status":"ok"`.
 
+When `SITE_URL` is set to your public Vercel domain, visits to the Render URL redirect to that canonical website. Render continues to serve `/api/*`, `/robots.txt` and `/sitemap.xml` for Vercel's proxy.
+
 ### 2. Connect Vercel to the API
 
 1. In Vercel, import the same GitHub repository as a project. Use the repository root, the `npm run build` build command, and `dist` as the output directory.

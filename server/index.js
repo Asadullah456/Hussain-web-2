@@ -447,6 +447,23 @@ app.get('/sitemap.xml', (req, res) => {
   }
 });
 
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/') || ['/robots.txt', '/sitemap.xml'].includes(req.path)) {
+    return next();
+  }
+
+  if (!process.env.SITE_URL?.trim()) return next();
+
+  try {
+    const origin = getPublicSiteOrigin(req);
+    if (`${req.protocol}://${req.get('host')}` === origin) return next();
+    return res.redirect(308, `${origin}${req.originalUrl}`);
+  } catch (error) {
+    console.error('Unable to redirect to the canonical website:', error);
+    return next(error);
+  }
+});
+
 const clientDist = path.resolve(__dirname, '../dist');
 app.use(express.static(clientDist));
 app.get('*', (req, res, next) => {
