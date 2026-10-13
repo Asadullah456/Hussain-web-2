@@ -21,9 +21,40 @@ The frontend and Express API run together in development. Without a MongoDB URI,
 
 The unlinked admin sign-in path is configured with `VITE_ADMIN_PATH` (currently `/academy-admin-7f4c92`). Set it in the build and server environment so the frontend and API use the same path. For production, configure `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `VITE_ADMIN_PATH` in your hosting provider; do not add credentials to frontend code or commit `.env`. Set `SITE_URL` to the public HTTPS origin (for example, `https://your-domain.com`) so the sitemap and crawler directives use the canonical site address.
 
-## Production
+## Deploying with Vercel and Render
 
-Run `npm run build` to create the frontend in `dist/`, then `npm start` to serve the built site and API. Set `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `VITE_ADMIN_PATH` and, if needed, `PORT` in the deployment environment. Use HTTPS in production so the admin session cookie is sent securely.
+Deploy the Vite frontend to Vercel and the Express API to Render. Vercel proxies `/api/*`, `/robots.txt` and `/sitemap.xml` to Render so browser requests and the admin session cookie stay on the Vercel site origin.
+
+First, commit and push `render.yaml`, `vercel.json` and the README changes to GitHub. Import the repository root on both platforms; the video is bundled into the Vercel build from the checked-in project file.
+
+### 1. Create the API service on Render
+
+1. In Render, choose **New > Blueprint** and connect this GitHub repository. Render reads [`render.yaml`](./render.yaml) to create the API service.
+2. The Blueprint uses an always-on Starter instance. Render's free web services spin down after inactivity and cause cold starts; use an always-on paid instance to avoid that behavior. Review Render's current pricing before creating it.
+3. Add the prompted secret environment values in Render:
+   - `MONGODB_URI`: your MongoDB Atlas connection string. In Atlas, allow connections from Render (Render may use changing outbound IPs).
+   - `ADMIN_EMAIL`: the private admin login email.
+   - `ADMIN_PASSWORD`: a long, unique password.
+   - `SITE_URL`: the public HTTPS origin of your Vercel site, without a trailing slash (for example, `https://your-site.vercel.app`). If you don't know the assigned Vercel URL yet, update this value in Render after the first Vercel deployment. Update it again if you later use a custom domain.
+4. Wait for the Render service to deploy and confirm its `/api/health` endpoint returns JSON with `"status":"ok"`.
+
+### 2. Connect Vercel to the API
+
+1. In Vercel, import the same GitHub repository as a project. Use the repository root, the `npm run build` build command, and `dist` as the output directory.
+2. In **Project Settings > Environment Variables**, add `VITE_ADMIN_PATH` with the same private sign-in path configured in Render (the default is `/academy-admin-7f4c92`). Apply it to Production, Preview, and Development as appropriate.
+3. Open [`vercel.json`](./vercel.json). Its API destination is set to `https://hussain-quran-academy-api.onrender.com`. If Render assigned your service a different hostname, replace that hostname in each destination in this file.
+4. Redeploy Vercel after setting the environment variable or changing the rewrite hostname. The frontend and API must use the same `VITE_ADMIN_PATH`.
+
+### 3. Verify production
+
+- Open the Vercel site and check `/api/health`, `/robots.txt` and `/sitemap.xml`.
+- Submit a trial enquiry and confirm it appears in MongoDB and the admin panel.
+- Open the admin path directly, sign in, refresh the page, and sign out to verify the session cookie.
+- Keep `.env` out of GitHub. Configure production secrets in Render, not Vercel or source files. If `.env` was ever committed or shared, rotate its MongoDB credential and admin password.
+
+The frontend is static on Vercel and does not have a server cold start. The API runs continuously on Render's paid instance. MongoDB must be reachable for enquiries and admin data to work; public course and teacher pages remain available if the database is disconnected.
+
+For a single-host deployment instead, `npm run build` creates `dist/` and `npm start` serves the built site and API together. Configure the server environment variables described above.
 
 ## API
 
