@@ -18,4 +18,4 @@ services:
       - key: VITE_ADMIN_PATH
         value: /academy-admin-7f4c92
       - key: SITE_URL
-        sync: false
+        value: https://www.oneummahquranlearning.com

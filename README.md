@@ -19,7 +19,7 @@ A responsive Quran-learning website for One Ummah Quran Learning, built with Rea
 
 The frontend and Express API run together in development. Without a MongoDB URI, the courses and teacher browsing still work, but trial requests cannot be saved; visitors can still contact the academy using the WhatsApp link. Admin sign-in checks `ADMIN_EMAIL` and `ADMIN_PASSWORD` on the server and protects admin API requests with an expiring, HttpOnly session cookie. `VITE_ADMIN_PATH` is the URL of the private sign-in page; it is not a substitute for the email and password. Changing `.env` requires restarting the server; changing `VITE_ADMIN_PATH` also requires restarting the frontend in development or rebuilding for production.
 
-The unlinked admin sign-in path is configured with `VITE_ADMIN_PATH` (currently `/academy-admin-7f4c92`). Set it in the build and server environment so the frontend and API use the same path. For production, configure `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `VITE_ADMIN_PATH` in your hosting provider; do not add credentials to frontend code or commit `.env`. Set `SITE_URL` to the public HTTPS origin (for example, `https://your-domain.com`) so the sitemap and crawler directives use the canonical site address.
+The unlinked admin sign-in path is configured with `VITE_ADMIN_PATH` (currently `/academy-admin-7f4c92`). Set it in the build and server environment so the frontend and API use the same path. For production, configure `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `VITE_ADMIN_PATH` in your hosting provider; do not add credentials to frontend code or commit `.env`. `SITE_URL` is set in `render.yaml` to `https://www.oneummahquranlearning.com`, the canonical site address used for redirects, sitemap and crawler directives.
 
 ## Deploying with Vercel and Render
 
@@ -35,21 +35,21 @@ First, commit and push `render.yaml`, `vercel.json` and the README changes to Gi
    - `MONGODB_URI`: your MongoDB Atlas connection string. In Atlas, allow connections from Render (Render may use changing outbound IPs).
    - `ADMIN_EMAIL`: the private admin login email.
    - `ADMIN_PASSWORD`: a long, unique password.
-   - `SITE_URL`: the public HTTPS origin of your Vercel site, without a trailing slash (for example, `https://your-site.vercel.app`). If you don't know the assigned Vercel URL yet, update this value in Render after the first Vercel deployment. Update it again if you later use a custom domain.
+   - `SITE_URL`: already set in `render.yaml` to `https://www.oneummahquranlearning.com`. This makes visits to the Render URL redirect to the custom domain.
 4. Wait for the Render service to deploy and confirm its `/api/health` endpoint returns JSON with `"status":"ok"`.
 
-When `SITE_URL` is set to your public Vercel domain, visits to the Render URL redirect to that canonical website. Render continues to serve `/api/*`, `/robots.txt` and `/sitemap.xml` for Vercel's proxy.
+Visits to the Render URL redirect to the custom domain, except for `/api/*`, `/robots.txt` and `/sitemap.xml`, which remain available for Vercel's proxy.
 
 ### 2. Connect Vercel to the API
 
 1. In Vercel, import the same GitHub repository as a project. Use the repository root, the `npm run build` build command, and `dist` as the output directory.
 2. In **Project Settings > Environment Variables**, add `VITE_ADMIN_PATH` with the same private sign-in path configured in Render (the default is `/academy-admin-7f4c92`). Apply it to Production, Preview, and Development as appropriate.
-3. Open [`vercel.json`](./vercel.json). Its API destination is set to `https://hussain-web-2.onrender.com`. If Render assigned your service a different hostname, replace that hostname in each destination in this file.
+3. `vercel.json` redirects requests on Vercel-hosted `*.vercel.app` domains to `https://www.oneummahquranlearning.com`, preserving the requested path. Its API destination is set to `https://hussain-web-2.onrender.com`; if Render assigned your service a different hostname, replace that hostname in each destination in this file.
 4. Redeploy Vercel after setting the environment variable or changing the rewrite hostname. The frontend and API must use the same `VITE_ADMIN_PATH`.
 
 ### 3. Verify production
 
-- Open the Vercel site and check `/api/health`, `/robots.txt` and `/sitemap.xml`.
+- Open `https://www.oneummahquranlearning.com` and check `/api/health`, `/robots.txt` and `/sitemap.xml`. Confirm the Render URL and the Vercel `*.vercel.app` URL redirect to the custom domain.
 - Submit a trial enquiry and confirm it appears in MongoDB and the admin panel.
 - Open the admin path directly, sign in, refresh the page, and sign out to verify the session cookie.
 - Keep `.env` out of GitHub. Configure production secrets in Render, not Vercel or source files. If `.env` was ever committed or shared, rotate its MongoDB credential and admin password.
