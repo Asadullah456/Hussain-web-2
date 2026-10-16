@@ -123,6 +123,18 @@ function getClassTypeDetail(courseTitle, classType) {
   if (!classOption) throw new Error(`Unknown class type: ${classType}`);
   return `${classOption.detail} · ${getClassDuration(courseTitle, classType)}`;
 }
+function getFeeCourseForTitle(courseTitle) {
+  const courseName = courseTitle.toLowerCase();
+  if (courseName.includes('qaida') || courseName.includes('nazra')) return FEE_COURSES.find((item) => item.id === 'qaida-nazra');
+  if (courseName.includes('hifz')) return FEE_COURSES.find((item) => item.id === 'hifz');
+  if (courseName.includes('islamic studies') || courseName.includes('hadith')) return FEE_COURSES.find((item) => item.id === 'studies');
+  if (courseName.includes('tafsir') || courseName.includes('tafseer')) return FEE_COURSES.find((item) => item.id === 'tafsir');
+  if (courseName.includes('language') || ['arabic', 'english', 'urdu', 'pashto'].some((language) => courseName.includes(language))) {
+    return FEE_COURSES.find((item) => item.id === 'languages');
+  }
+  if (courseName.includes('tajweed') || courseName.includes('recitation')) return FEE_COURSES.find((item) => item.id === 'tajweed-recitation');
+  return undefined;
+}
 function getNextPakistanDate(dayOfMonth) {
   const parts = new Intl.DateTimeFormat('en', {
     timeZone: PAKISTAN_TIME_ZONE,
@@ -244,6 +256,7 @@ function Brand({ light = false }) {
 function CourseEnrollmentModal({ open, onClose, course, initialClassType = '', initialPackage = '' }) {
   const [classType, setClassType] = useState(initialClassType);
   const [classPackage, setClassPackage] = useState(initialPackage);
+  const courseFees = getFeeCourseForTitle(course);
   const [preferredJoiningDate, setPreferredJoiningDate] = useState('');
   const [timeZone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || PAKISTAN_TIME_ZONE);
   const courseName = course.toLowerCase();
@@ -375,14 +388,17 @@ function CourseEnrollmentModal({ open, onClose, course, initialClassType = '', i
           </fieldset>
           {classType && <fieldset className="course-choice-group">
             <legend>2. Choose a weekly package</legend>
-            <label className={`course-choice${classPackage === 'Premium Package' ? ' selected' : ''}`}>
-              <input type="radio" name="classPackage" value="Premium Package" checked={classPackage === 'Premium Package'} onChange={(event) => setClassPackage(event.target.value)} />
-              <span><strong>Premium Package</strong><small>4 classes per week · Monday through Thursday</small></span>
-            </label>
-            <label className={`course-choice${classPackage === 'Golden Package' ? ' selected' : ''}`}>
-              <input type="radio" name="classPackage" value="Golden Package" checked={classPackage === 'Golden Package'} onChange={(event) => setClassPackage(event.target.value)} />
-              <span><strong>Golden Package</strong><small>6 classes per week · Monday through Saturday</small></span>
-            </label>
+            {FEE_PACKAGES.map((packageOption) => {
+              const prices = courseFees?.prices[classType]?.[packageOption.id];
+              return <label className={`course-choice${classPackage === packageOption.id ? ' selected' : ''}`} key={packageOption.id}>
+                <input type="radio" name="classPackage" value={packageOption.id} checked={classPackage === packageOption.id} onChange={(event) => setClassPackage(event.target.value)} />
+                <span><strong>{packageOption.title}</strong><small>{packageOption.detail}</small>
+                  {prices
+                    ? <span className="course-choice-prices"><del>${prices.regular} / £{convertUsdToGbp(prices.regular).toLocaleString()}</del><strong>${prices.sale} / £{convertUsdToGbp(prices.sale).toLocaleString()}<small>/ month</small></strong></span>
+                    : <small className="course-choice-unavailable">Rates coming soon</small>}
+                </span>
+              </label>;
+            })}
           </fieldset>}
           <button className="button button-primary submit-button" type="button" disabled={!classType || !classPackage} onClick={() => setShowForm(true)}>
             Fill the form <ArrowRight size={17} />

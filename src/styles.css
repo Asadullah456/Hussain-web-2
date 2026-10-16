@@ -231,6 +231,11 @@ footer { padding:47px max(calc((100vw - 1074px)/2),58px) 0;background:#102e25;co
 .course-choice span { display:grid;gap:4px; }
 .course-choice strong { color:var(--dark);font-size:11px; }
 .course-choice small { color:#74786e;font-size:10px;line-height:1.5; }
+.course-choice-prices { display:grid;justify-items:start;gap:3px;margin-top:4px; }
+.course-choice-prices del { color:#858479;font-size:9px;text-decoration-thickness:1px; }
+.course-choice-prices strong { color:#0e6249;font:600 15px/1.2 var(--serif); }
+.course-choice-prices strong small { margin-left:4px;color:#74786e;font:400 9px "DM Sans",sans-serif; }
+.course-choice-unavailable { margin-top:4px; }
 .course-selection-back { margin-top:13px;padding:0;border:0;background:none;color:var(--green);font-size:10px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer; }
 .trial-form { display:flex;flex-direction:column;gap:13px; }.trial-form label { display:flex;flex-direction:column;gap:6px;color:#39483d;font-size:9px;font-weight:700; }
 .trial-form input,.trial-form textarea,.trial-form select { width:100%;min-height:39px;padding:9px 10px;border:1px solid #dedbd0;border-radius:2px;background:#fffefa;color:#293b30;font-size:10px;font-weight:400; }.trial-form textarea{resize:vertical}
